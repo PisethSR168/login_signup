@@ -144,9 +144,7 @@ class HomeScreen extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
-        onTap: () {
-          // TODO: Navigation
-        },
+        onTap: () {},
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

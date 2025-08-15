@@ -26,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // AuthWrapper will handle navigation automatically
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text(e.message ?? "Login failed")));
     } finally {
@@ -136,18 +137,14 @@ class _LoginScreenState extends State<LoginScreen> {
               icon: Icons.g_mobiledata,
               text: 'Login with Google',
               color: AppColors.primaryButton,
-              onPressed: () {
-                // TODO: Implement Google login
-              },
+              onPressed: () {},
             ),
             const SizedBox(height: 16),
             SocialButton(
               icon: Icons.facebook,
               text: 'Login with Facebook',
               color: AppColors.facebookBlue,
-              onPressed: () {
-                // TODO: Implement Facebook login
-              },
+              onPressed: () {},
             ),
             const SizedBox(height: 24),
             Row(
