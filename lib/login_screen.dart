@@ -1,19 +1,52 @@
 import 'package:flutter/material.dart';
-import 'signup_screen.dart'; // Add this import
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:login_signup/app_colors.dart';
+import 'signup_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      // AuthWrapper will handle navigation automatically
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Login failed")));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      backgroundColor: AppColors.bgColor,
+      appBar: AppBar(
+        title: const Text('Login'),
+        backgroundColor: AppColors.bgColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Add this for the logo
+            // Logo
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -21,7 +54,7 @@ class LoginScreen extends StatelessWidget {
               ),
               child: ClipOval(
                 child: Image.asset(
-                  'images/ProfileBoy.jpg',
+                  'assets/images/ProfileBoy.jpg',
                   height: 90,
                   width: 90,
                   fit: BoxFit.cover,
@@ -30,8 +63,9 @@ class LoginScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
-                labelText: 'Phone number, email or username',
+                labelText: 'Email or username',
                 filled: true,
                 fillColor: AppColors.textFieldBg,
                 border: OutlineInputBorder(
@@ -42,6 +76,7 @@ class LoginScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -57,7 +92,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: _isLoading ? null : _login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryButton,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -65,7 +100,9 @@ class LoginScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('LOGIN'),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('LOGIN'),
               ),
             ),
             const SizedBox(height: 16),
@@ -97,27 +134,31 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 24),
             SocialButton(
               icon: Icons.g_mobiledata,
-              text: 'Login with google',
+              text: 'Login with Google',
               color: AppColors.primaryButton,
-              onPressed: () {},
+              onPressed: () {
+                // TODO: Implement Google login
+              },
             ),
             const SizedBox(height: 16),
             SocialButton(
               icon: Icons.facebook,
-              text: 'Login with facebook',
+              text: 'Login with Facebook',
               color: AppColors.facebookBlue,
-              onPressed: () {},
+              onPressed: () {
+                // TODO: Implement Facebook login
+              },
             ),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Doesn't have account?"),
+                const Text("Don't have an account?"),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => SignupScreen()),
+                      MaterialPageRoute(builder: (_) => const SignupScreen()),
                     );
                   },
                   style: TextButton.styleFrom(
@@ -164,14 +205,4 @@ class SocialButton extends StatelessWidget {
       ),
     );
   }
-}
-
-class AppColors {
-  static const Color textFieldBg = Color(0xffE8E8E8);
-  static const Color primaryButton = Colors.blue;
-  static const Color facebookBlue = Color(0xff0866ff);
-  static const Color dividerColor = Color(0xffA2A2A2);
-
-  // ignore: prefer_typing_uninitialized_variables
-  static var bgColor;
 }
