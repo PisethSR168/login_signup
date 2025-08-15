@@ -1,8 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:login_signup/login_screen.dart'; // For SocialButton and AppColors
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:login_signup/app_colors.dart';
+import 'login_screen.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
+
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  final _fullNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _signup() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Create user in Firebase Auth
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+
+      // Store user details in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+            'fullName': _fullNameController.text.trim(),
+            'email': _emailController.text.trim(),
+            'role': 'user', // Default role
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Signup failed")));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,12 +60,12 @@ class SignupScreen extends StatelessWidget {
         title: const Text('Sign Up'),
         backgroundColor: AppColors.bgColor,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Add this for the logo
+            // Logo
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -34,6 +82,7 @@ class SignupScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             TextField(
+              controller: _fullNameController,
               decoration: InputDecoration(
                 labelText: 'Full Name',
                 filled: true,
@@ -46,6 +95,7 @@ class SignupScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Email Address',
                 filled: true,
@@ -58,6 +108,7 @@ class SignupScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -73,7 +124,7 @@ class SignupScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: _isLoading ? null : _signup,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryButton,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -81,7 +132,9 @@ class SignupScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('CREATE ACCOUNT'),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('CREATE ACCOUNT'),
               ),
             ),
             const SizedBox(height: 16),
@@ -91,7 +144,10 @@ class SignupScreen extends StatelessWidget {
                 const Text('Already have account?'),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primaryButton,
@@ -99,38 +155,6 @@ class SignupScreen extends StatelessWidget {
                   child: const Text('Login'),
                 ),
               ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: Divider(color: AppColors.dividerColor, thickness: 1),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    'OR',
-                    style: TextStyle(color: AppColors.dividerColor),
-                  ),
-                ),
-                Expanded(
-                  child: Divider(color: AppColors.dividerColor, thickness: 1),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            SocialButton(
-              icon: Icons.g_mobiledata,
-              text: 'Connect with google',
-              color: AppColors.primaryButton,
-              onPressed: () {},
-            ),
-            const SizedBox(height: 16),
-            SocialButton(
-              icon: Icons.facebook,
-              text: 'Connect with facebook',
-              color: AppColors.facebookBlue,
-              onPressed: () {},
             ),
           ],
         ),
