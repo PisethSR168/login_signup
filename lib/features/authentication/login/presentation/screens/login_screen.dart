@@ -1,54 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:login_signup/app_colors.dart';
-import 'login_screen.dart';
+import 'package:login_signup/core/theme/app_colors.dart';
+import 'package:login_signup/features/authentication/signup/presentation/screens/signup_screen.dart';
+import 'package:login_signup/features/home/presentation/screens/dashboard_screen.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
-  final _fullNameController = TextEditingController();
+class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  Future<void> _signup() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
 
     try {
-      // Create user in Firebase Auth
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
-
-      // Store user details in Firestore
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .set({
-            'fullName': _fullNameController.text.trim(),
-            'email': _emailController.text.trim(),
-            'role': 'user', // Default role
-            'createdAt': FieldValue.serverTimestamp(),
-          });
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      // Navigate to Dashboard on success
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+      );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(
         // ignore: use_build_context_synchronously
         context,
-      ).showSnackBar(SnackBar(content: Text(e.message ?? "Signup failed")));
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Login failed")));
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
 
@@ -57,10 +45,10 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: const Text('Login'),
         backgroundColor: AppColors.bgColor,
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -80,24 +68,11 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: _fullNameController,
-              decoration: InputDecoration(
-                labelText: 'Full Name',
-                filled: true,
-                fillColor: AppColors.textFieldBg,
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 32),
             TextField(
               controller: _emailController,
               decoration: InputDecoration(
-                labelText: 'Email Address',
+                labelText: 'Email or username',
                 filled: true,
                 fillColor: AppColors.textFieldBg,
                 border: OutlineInputBorder(
@@ -124,7 +99,7 @@ class _SignupScreenState extends State<SignupScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _signup,
+                onPressed: _isLoading ? null : _login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryButton,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -134,25 +109,25 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('CREATE ACCOUNT'),
+                    : const Text('LOGIN'),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Already have account?'),
+                const Text("Don't have an account?"),
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      MaterialPageRoute(builder: (_) => const SignupScreen()),
                     );
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primaryButton,
                   ),
-                  child: const Text('Login'),
+                  child: const Text('Create new account'),
                 ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_signup/features/home/presentation/screens/dashboard_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -80,12 +81,18 @@ class HomeScreen extends StatelessWidget {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 children: [
-                  _buildMenuCard(Icons.article, "Syllabus"),
-                  _buildMenuCard(Icons.quiz, "Test"),
-                  _buildMenuCard(Icons.notifications, "Notice"),
-                  _buildMenuCard(Icons.attach_money, "Fees"),
-                  _buildMenuCard(Icons.photo, "Gallery"),
-                  _buildMenuCard(Icons.person, "Profile"),
+                  _buildMenuCard(Icons.article, "Syllabus", () {}),
+                  _buildMenuCard(Icons.quiz, "Test", () {}),
+                  _buildMenuCard(Icons.notifications, "Notice", () {}),
+                  _buildMenuCard(Icons.attach_money, "Fees", () {}),
+                  _buildMenuCard(Icons.photo, "Gallery", () {}),
+                  _buildMenuCard(Icons.person, "Profile", () {}),
+                  _buildMenuCard(Icons.dashboard, "Dashboard", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                    );
+                  }),
                 ],
               ),
 
@@ -140,11 +147,11 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildMenuCard(IconData icon, String title) {
+  static Widget _buildMenuCard(IconData icon, String title, VoidCallback onTap) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

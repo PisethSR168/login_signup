@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "705640126775",
+    "project_id": "loginform-19e87",
+    "storage_bucket": "loginform-19e87.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705640126775:android:c387be3e9b1d6043b022b2",
+        "android_client_info": {
+          "package_name": "com.example.login_signup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaT7QxpKYONSPzoVbkeVP8cLO5Fukqqo4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

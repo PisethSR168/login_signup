@@ -2,10 +2,15 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:login_signup/signup_screen.dart';
-import 'login_screen.dart';
+import 'package:login_signup/features/authentication/login/presentation/screens/login_screen.dart';
+import 'package:login_signup/features/authentication/signup/presentation/screens/signup_screen.dart';
+import 'package:login_signup/core/theme/app_colors.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(); 
   runApp(
     DevicePreview(
       builder: (context) => const MyHomeApp(),
@@ -39,11 +44,4 @@ class MyHomeApp extends StatelessWidget {
   }
 }
 
-class AppColors {
-  static const Color bgColor = Color(0xff78C9FF);
-  static const Color textFieldBg = Color(0xffE8E8E8);
-  static const Color primaryButton = Colors.blue;
-  static const Color facebookBlue = Color(0xff0866ff);
-  static const Color dividerColor = Color(0xffA2A2A2);
-  static const Color white = Colors.white;
-}
+
