@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:login_signup/features/class/presentation/screens/class_list_screen.dart';
+import 'package:login_signup/features/course/presentation/screens/course_list_screen.dart';
+import 'package:login_signup/features/enrollment/presentation/screens/enrollment_list_screen.dart';
 import 'package:login_signup/features/home/presentation/widgets/sidebar.dart';
+import 'package:login_signup/features/student/presentation/screens/student_list_screen.dart';
+import 'package:login_signup/features/teacher/presentation/screens/teacher_list_screen.dart';
+import 'package:login_signup/features/user/presentation/screens/user_list_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -37,7 +43,7 @@ class DashboardScreen extends StatelessWidget {
                         children: [
                           Icon(Icons.person, color: Colors.indigo),
                           SizedBox(width: 8),
-                          Text("Xamarin UI Design",
+                          Text("Dev Piseeth",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16)),
                         ],
@@ -72,13 +78,70 @@ class DashboardScreen extends StatelessWidget {
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 physics: const NeverScrollableScrollPhysics(),
-                children: const [
-                  DashboardButton(icon: Icons.menu_book, label: "Syllabus"),
-                  DashboardButton(icon: Icons.fact_check, label: "Test"),
-                  DashboardButton(icon: Icons.notifications, label: "Notice"),
-                  DashboardButton(icon: Icons.payment, label: "Fees"),
-                  DashboardButton(icon: Icons.photo_album, label: "Gallery"),
-                  DashboardButton(icon: Icons.person, label: "Profile"),
+                children: [
+                  DashboardButton(
+                    icon: Icons.class_,
+                    label: "Class",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ClassListScreen()),
+                      );
+                    },
+                  ),
+                  DashboardButton(
+                    icon: Icons.book,
+                    label: "Course",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CourseListScreen()),
+                      );
+                    },
+                  ),
+                  DashboardButton(
+                    icon: Icons.person,
+                    label: "Student",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StudentListScreen()),
+                      );
+                    },
+                  ),
+                  DashboardButton(
+                    icon: Icons.app_registration,
+                    label: "Enrollment",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const EnrollmentListScreen()),
+                      );
+                    },
+                  ),
+                  DashboardButton(
+                    icon: Icons.person,
+                    label: "Teacher",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const TeacherListScreen()),
+                      );
+                    },
+                  ),
+                  DashboardButton(
+                    icon: Icons.person_outline,
+                    label: "User",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const UserListScreen()),
+                      );
+                    },
+                  ),
                 ],
               ),
 
@@ -137,8 +200,10 @@ class DashboardScreen extends StatelessWidget {
 class DashboardButton extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
-  const DashboardButton({super.key, required this.icon, required this.label});
+  const DashboardButton(
+      {super.key, required this.icon, required this.label, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +211,7 @@ class DashboardButton extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -154,7 +219,8 @@ class DashboardButton extends StatelessWidget {
             Icon(icon, color: Colors.indigo, size: 30),
             const SizedBox(height: 6),
             Text(label,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                style: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.w500)),
           ],
         ),
       ),
@@ -174,7 +240,9 @@ class ProgressInfo extends StatelessWidget {
       children: [
         Text(value,
             style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16)),
         const SizedBox(height: 5),
         Text(title, style: const TextStyle(color: Colors.white70, fontSize: 12)),
       ],
